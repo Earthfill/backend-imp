@@ -4,7 +4,7 @@ const PASSWORD_RULE =
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
 const PASSWORD_RULE_MESSAGE =
-  'Password should have 1 upper case, lowcase letter along with a number and special character.';
+  'Password should have atleast 1 uppercase and lowercase letter along with a number and special character.';
 
 const VALIDATION_PIPE = new ValidationPipe({
   errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
