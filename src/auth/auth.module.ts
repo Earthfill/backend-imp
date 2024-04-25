@@ -8,11 +8,12 @@ import { JwtStrategy } from './strategies';
 import { User, UserSchema } from '../user/entities';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthController } from './auth.controller';
+import { RolesGuard } from './guards';
 
 @Module({
   imports: [
     UserModule,
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -26,7 +27,8 @@ import { AuthController } from './auth.controller';
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, RolesGuard],
   controllers: [AuthController],
+  exports: [PassportModule, JwtStrategy],
 })
 export class AuthModule {}
