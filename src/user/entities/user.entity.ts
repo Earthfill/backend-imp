@@ -48,6 +48,10 @@ export class User extends Document {
   @ApiProperty({ description: 'Check if account is verified' })
   @Prop({ default: false })
   isVerified: boolean;
+
+  @ApiProperty({ description: 'Refresh token' })
+  @Prop()
+  refreshToken: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -27,6 +27,15 @@ import { MailModule } from '../mail/mail.module';
         };
       },
     }),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('REFRESH_JWT_SECRET'),
+        signOptions: {
+          expiresIn: config.get<string | number>('REFRESH_JWT_EXPIRES'),
+        },
+      }),
+    }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   providers: [AuthService, JwtStrategy, RolesGuard],

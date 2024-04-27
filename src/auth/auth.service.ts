@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../user/entities';
 import { JwtService } from '@nestjs/jwt';
-import { SignInDto, SignUpDto } from '../user/dto';
+import { RefreshTokenDto, SignInDto, SignUpDto } from '../user/dto';
 import * as bcrypt from 'bcrypt';
 import { MailService } from '../mail/mail.service';
 import { MailDto } from '../mail/dto';
@@ -22,7 +22,7 @@ export class AuthService {
     private mailService: MailService,
   ) {}
 
-  async signup(signUpDto: SignUpDto): Promise<{ user: User; token: string }> {
+  async signup(signUpDto: SignUpDto): Promise<User> {
     const { email, password, firstName, lastName } = signUpDto;
     const code = Math.random().toString().slice(-6);
     const otpExpiration = new Date();
@@ -59,18 +59,19 @@ export class AuthService {
 
     try {
       await this.confirmOtp(email, code);
-      user.isVerified = true;
+      // user.isVerified = true;
       await user.save();
     } catch (error) {
       await this.userModel.deleteOne({ _id: user._id });
       throw new UnauthorizedException('OTP yet to be confirmed');
     }
 
-    const token = this.jwtService.sign({ id: user._id });
-    return { user, token };
+    return user;
   }
 
-  async signin(signInDto: SignInDto): Promise<{ token: string }> {
+  async signin(
+    signInDto: SignInDto,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const { email, password } = signInDto;
     const user = await this.userModel.findOne({ email });
     if (!user) {
@@ -80,8 +81,13 @@ export class AuthService {
     if (!isPasswordMatched) {
       throw new UnauthorizedException('Invalid password');
     }
-    const token = this.jwtService.sign({ id: user._id });
-    return { token };
+    const accessToken = this.jwtService.sign({ id: user._id });
+    const refreshToken = this.jwtService.sign({ id: user._id });
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    return { accessToken, refreshToken };
   }
 
   async confirmOtp(email: string, otp: string) {
@@ -89,8 +95,26 @@ export class AuthService {
     if (!user || user.otp !== otp || user.otpExpiration < new Date()) {
       throw new UnauthorizedException('Invalid OTP or OTP expired');
     }
+    user.isVerified = true;
     await user.save();
     user.otp = undefined;
     user.otpExpiration = undefined;
+  }
+
+  async refreshToken(
+    refreshTokenDto: RefreshTokenDto,
+  ): Promise<{ accessToken: string }> {
+    try {
+      const { refreshToken } = refreshTokenDto;
+      const decoded = this.jwtService.verify(refreshToken);
+      const user = await this.userModel.findById(decoded.id);
+      if (!user || user.refreshToken !== refreshToken) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+      const accessToken = this.jwtService.sign({ id: user._id });
+      return { accessToken };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 }

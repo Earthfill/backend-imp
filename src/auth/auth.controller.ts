@@ -1,6 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ConfirmOtpDto, SignInDto, SignUpDto } from '../user/dto';
+import {
+  ConfirmOtpDto,
+  RefreshTokenDto,
+  SignInDto,
+  SignUpDto,
+} from '../user/dto';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -18,9 +23,7 @@ export class AuthController {
     description: 'Created user object and token as response',
   })
   @ApiBadRequestResponse({ description: 'User cannot register. Try again!' })
-  async signup(
-    @Body() signUpDto: SignUpDto,
-  ): Promise<{ user: User; token: string }> {
+  async signup(@Body() signUpDto: SignUpDto): Promise<User> {
     return await this.authService.signup(signUpDto);
   }
 
@@ -29,7 +32,9 @@ export class AuthController {
     description: 'Generated token as response',
   })
   @ApiBadRequestResponse({ description: 'Invalid credentials' })
-  async signin(@Body() signinDto: SignInDto): Promise<{ token: string }> {
+  async signin(
+    @Body() signinDto: SignInDto,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     return await this.authService.signin(signinDto);
   }
 
@@ -42,5 +47,10 @@ export class AuthController {
   async confirmOtp(@Body() confirmOtpDto: ConfirmOtpDto) {
     const { email, otp } = confirmOtpDto;
     return await this.authService.confirmOtp(email, otp);
+  }
+
+  @Post('refreshtoken')
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    return await this.authService.refreshToken(refreshTokenDto);
   }
 }
