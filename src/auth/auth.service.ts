@@ -57,15 +57,6 @@ export class AuthService {
       isVerified: false,
     });
 
-    try {
-      await this.confirmOtp(email, code);
-      // user.isVerified = true;
-      await user.save();
-    } catch (error) {
-      await this.userModel.deleteOne({ _id: user._id });
-      throw new UnauthorizedException('OTP yet to be confirmed');
-    }
-
     return user;
   }
 
@@ -74,8 +65,12 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const { email, password } = signInDto;
     const user = await this.userModel.findOne({ email });
+    console.log(user);
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+    if (!user.isVerified) {
+      throw new UnauthorizedException('OTP has not been confirmed!');
     }
     const isPasswordMatched = await bcrypt.compare(password, user.password);
     if (!isPasswordMatched) {
@@ -90,7 +85,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async confirmOtp(email: string, otp: string) {
+  async confirmOtp(email: string, otp: string): Promise<void> {
     const user = await this.userModel.findOne({ email });
     if (!user || user.otp !== otp || user.otpExpiration < new Date()) {
       throw new UnauthorizedException('Invalid OTP or OTP expired');
