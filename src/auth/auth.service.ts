@@ -54,11 +54,14 @@ export class AuthService {
       password: hashedPassword,
       otp: code,
       otpExpiration: otpExpiration,
+      isVerified: false,
     });
 
-    const isConfirmed = await this.confirmOtp(email, code);
-
-    if (!isConfirmed) {
+    try {
+      await this.confirmOtp(email, code);
+      user.isVerified = true;
+      await user.save();
+    } catch (error) {
       await this.userModel.deleteOne({ _id: user._id });
       throw new UnauthorizedException('OTP yet to be confirmed');
     }
@@ -81,15 +84,13 @@ export class AuthService {
     return { token };
   }
 
-  async confirmOtp(email: string, otp: string): Promise<boolean> {
+  async confirmOtp(email: string, otp: string) {
     const user = await this.userModel.findOne({ email });
-    console.log(user);
     if (!user || user.otp !== otp || user.otpExpiration < new Date()) {
-      return false;
+      throw new UnauthorizedException('Invalid OTP or OTP expired');
     }
+    await user.save();
     user.otp = undefined;
     user.otpExpiration = undefined;
-    await user.save();
-    return true;
   }
 }

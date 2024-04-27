@@ -44,6 +44,10 @@ export class User extends Document {
   @ApiProperty({ description: 'OTP Expiration Time' })
   @Prop()
   otpExpiration: Date;
+
+  @ApiProperty({ description: 'Check if account is verified' })
+  @Prop({ default: false })
+  isVerified: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

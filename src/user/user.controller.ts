@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators';
 import { JwtAuthGuard } from '../auth/guards';
 import { User } from './entities';
@@ -13,6 +13,10 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'User profile retrieved successfully',
+    type: User,
+  })
   profile(@CurrentUser() user: User) {
     return user;
   }

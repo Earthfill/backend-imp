@@ -16,7 +16,6 @@ export class AuthController {
   @Post('signup')
   @ApiCreatedResponse({
     description: 'Created user object and token as response',
-    type: User,
   })
   @ApiBadRequestResponse({ description: 'User cannot register. Try again!' })
   async signup(
@@ -28,7 +27,6 @@ export class AuthController {
   @Post('signin')
   @ApiCreatedResponse({
     description: 'Generated token as response',
-    type: String,
   })
   @ApiBadRequestResponse({ description: 'Invalid credentials' })
   async signin(@Body() signinDto: SignInDto): Promise<{ token: string }> {
@@ -41,7 +39,7 @@ export class AuthController {
     type: String,
   })
   @ApiBadRequestResponse({ description: 'Invalid OTP' })
-  async confirmOtp(@Body() confirmOtpDto: ConfirmOtpDto): Promise<boolean> {
+  async confirmOtp(@Body() confirmOtpDto: ConfirmOtpDto) {
     const { email, otp } = confirmOtpDto;
     return await this.authService.confirmOtp(email, otp);
   }
