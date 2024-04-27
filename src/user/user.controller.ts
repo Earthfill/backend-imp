@@ -4,7 +4,7 @@ import { CurrentUser } from '../auth/decorators';
 import { JwtAuthGuard } from '../auth/guards';
 import { User } from './entities';
 import { UserDto } from './dto';
-import { Serialize } from '../interceptors/serialize.interceptor';
+import { Serialize } from '../common/interceptors/serialize.interceptor';
 
 @ApiTags('User')
 @Controller('user')

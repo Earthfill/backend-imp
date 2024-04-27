@@ -6,7 +6,7 @@ import {
   Length,
   Matches,
 } from 'class-validator';
-import { MESSAGES, REGEX } from '../../utils';
+import { MESSAGES, REGEX } from '../../common/utils';
 
 export class SignUpDto {
   @ApiProperty({

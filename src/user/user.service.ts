@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { APIFeatures } from '../utils';
+import { APIFeatures } from '../common/utils';
 
 @Injectable()
 export class UserService {

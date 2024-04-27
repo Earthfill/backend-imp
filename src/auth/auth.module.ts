@@ -9,10 +9,12 @@ import { User, UserSchema } from '../user/entities';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthController } from './auth.controller';
 import { RolesGuard } from './guards';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     UserModule,
+    MailModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],

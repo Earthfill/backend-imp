@@ -30,9 +30,20 @@ export class User extends Document {
   @Prop()
   password: string;
 
-  @ApiProperty({ description: 'The role of the User' })
+  @ApiProperty({
+    description: 'The role of the User',
+    enum: UserRoles,
+  })
   @Prop({ enum: UserRoles, default: UserRoles.MEMBER })
-  role: UserRoles;
+  role?: UserRoles;
+
+  @ApiProperty({ description: 'One-Time Password' })
+  @Prop()
+  otp: string;
+
+  @ApiProperty({ description: 'OTP Expiration Time' })
+  @Prop()
+  otpExpiration: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
