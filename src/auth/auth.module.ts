@@ -10,6 +10,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthController } from './auth.controller';
 import { RolesGuard } from './guards';
 import { MailModule } from '../mail/mail.module';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { GoogleService } from '../google/google.service';
 
 @Module({
   imports: [
@@ -38,8 +40,14 @@ import { MailModule } from '../mail/mail.module';
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
-  providers: [AuthService, JwtStrategy, RolesGuard],
+  providers: [
+    AuthService,
+    GoogleService,
+    JwtStrategy,
+    RolesGuard,
+    GoogleStrategy,
+  ],
   controllers: [AuthController],
-  exports: [PassportModule, JwtStrategy],
+  exports: [PassportModule, JwtStrategy, GoogleStrategy],
 })
 export class AuthModule {}

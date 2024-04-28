@@ -49,6 +49,10 @@ export class User extends Document {
   @Prop({ default: false })
   isVerified: boolean;
 
+  @ApiProperty({ description: 'Check if account is verified via Google' })
+  @Prop({ default: false })
+  isGoogleAuth: boolean;
+
   @ApiProperty({ description: 'Refresh token' })
   @Prop()
   refreshToken: string;

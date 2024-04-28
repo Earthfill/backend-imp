@@ -11,7 +11,8 @@ import { RefreshTokenDto, SignInDto, SignUpDto } from '../user/dto';
 import * as bcrypt from 'bcrypt';
 import { MailService } from '../mail/mail.service';
 import { MailDto } from '../mail/dto';
-import { UserRoles } from 'src/user/enums';
+import { UserRoles } from '../user/enums';
+import { GoogleService } from '../google/google.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private userModel: Model<User>,
     private jwtService: JwtService,
     private mailService: MailService,
+    private googleService: GoogleService,
   ) {}
 
   async signup(signUpDto: SignUpDto): Promise<User> {
@@ -65,7 +67,6 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const { email, password } = signInDto;
     const user = await this.userModel.findOne({ email });
-    console.log(user);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -83,6 +84,17 @@ export class AuthService {
     await user.save();
 
     return { accessToken, refreshToken };
+  }
+
+  async googleLogin(req) {
+    if (!req.user) {
+      return 'No user from google';
+    }
+
+    return {
+      message: 'User information from google',
+      user: req.user,
+    };
   }
 
   async confirmOtp(email: string, otp: string): Promise<void> {
