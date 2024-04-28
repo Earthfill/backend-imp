@@ -12,7 +12,6 @@ import * as bcrypt from 'bcrypt';
 import { MailService } from '../mail/mail.service';
 import { MailDto } from '../mail/dto';
 import { UserRoles } from '../user/enums';
-import { GoogleService } from '../google/google.service';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +20,6 @@ export class AuthService {
     private userModel: Model<User>,
     private jwtService: JwtService,
     private mailService: MailService,
-    private googleService: GoogleService,
   ) {}
 
   async signup(signUpDto: SignUpDto): Promise<User> {
@@ -91,10 +89,20 @@ export class AuthService {
       return 'No user from google';
     }
 
-    return {
-      message: 'User information from google',
-      user: req.user,
-    };
+    const googleUser = req.user;
+    let user = await this.userModel.findOne({ email: googleUser.email });
+
+    if (!user) {
+      user = await this.userModel.create({
+        email: googleUser.email,
+        firstName: googleUser.firstName,
+        lastName: googleUser.lastName,
+        role: UserRoles.MEMBER,
+        isGoogleAuth: true,
+      });
+    }
+
+    return user;
   }
 
   async confirmOtp(email: string, otp: string): Promise<void> {

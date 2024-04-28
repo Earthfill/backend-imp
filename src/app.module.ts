@@ -5,7 +5,6 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { MailModule } from './mail/mail.module';
-import { GoogleModule } from './google/google.module';
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { GoogleModule } from './google/google.module';
     UserModule,
     AuthModule,
     MailModule,
-    GoogleModule,
   ],
 })
 export class AppModule implements NestModule {

@@ -11,7 +11,6 @@ import { AuthController } from './auth.controller';
 import { RolesGuard } from './guards';
 import { MailModule } from '../mail/mail.module';
 import { GoogleStrategy } from './strategies/google.strategy';
-import { GoogleService } from '../google/google.service';
 
 @Module({
   imports: [
@@ -40,13 +39,7 @@ import { GoogleService } from '../google/google.service';
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
-  providers: [
-    AuthService,
-    GoogleService,
-    JwtStrategy,
-    RolesGuard,
-    GoogleStrategy,
-  ],
+  providers: [AuthService, JwtStrategy, RolesGuard, GoogleStrategy],
   controllers: [AuthController],
   exports: [PassportModule, JwtStrategy, GoogleStrategy],
 })
