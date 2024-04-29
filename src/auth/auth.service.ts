@@ -99,6 +99,8 @@ export class AuthService {
         lastName: googleUser.lastName,
         role: UserRoles.MEMBER,
         isGoogleAuth: true,
+        accessToken: googleUser.accessToken,
+        refreshToken: googleUser.refreshToken,
       });
     }
 

@@ -13,6 +13,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       scope: ['email', 'profile'],
     });
   }
+
+  authorizationParams(): { [key: string]: string } {
+    return {
+      access_type: 'offline',
+    };
+  }
   async validate(
     request: any,
     accessToken: string,
@@ -33,6 +39,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         accessToken,
         refreshToken,
       };
+      console.log(refreshToken);
       return done(null, user);
     } catch (error) {
       console.error('Google OAuth validation error:', error);

@@ -1,12 +1,17 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  ExecutionContext,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class GoogleAuthGuard
-  extends AuthGuard('google')
-  implements CanActivate
-{
+export class GoogleAuthGuard extends AuthGuard('google') {
   canActivate(context: ExecutionContext) {
     return super.canActivate(context);
+  }
+  handleRequest(err: BadRequestException, user: any) {
+    if (err) throw new BadRequestException('Invalid token');
+    return user;
   }
 }

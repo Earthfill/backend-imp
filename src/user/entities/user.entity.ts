@@ -55,6 +55,10 @@ export class User extends Document {
 
   @ApiProperty({ description: 'Refresh token' })
   @Prop()
+  accessToken: string;
+
+  @ApiProperty({ description: 'Refresh token' })
+  @Prop()
   refreshToken: string;
 }
 
